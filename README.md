@@ -54,7 +54,7 @@ Let us start by installing docker and docker compose.
 
 - Containerization is a lightweight form of virtualization where applications and their dependencies are packaged together into containers. 
 
-# Container
+### Container
 
 - A container packages an application and its dependencies so that it is able to run on any type of machine.
 - It includes everything an application needs to run: the code, runtime, libraries, environment variables and configuration files.
@@ -62,7 +62,7 @@ Let us start by installing docker and docker compose.
 
 - Let us compare how Containerization is more efficient than Virtualization.
 
-# Virtualization VS Containerization
+### Virtualization VS Containerization
 
 | Virtualization | Containerization |
 | --- | --- |
@@ -74,7 +74,7 @@ Let us start by installing docker and docker compose.
 
 ## Docker Basics
 
-# Image
+### Image
 
 - An image can be called as a blueprint of a container.
 - It includes the application code, libraries, environment variables and other configuration files.
@@ -95,7 +95,7 @@ Let us start by installing docker and docker compose.
 - Images are portable. The image you build on your local machine will work the same way on any other machine with Docker installed.
 - Docker images are stored in registries. The most common registry is [Docker Hub](https://hub.docker.com/), but organizations can also create their own private registries.
 
-# Dockerfile
+### Dockerfile
 
 - A Dockerfile is a text file containing a series of instructions to automate the process of building a Docker image.
 - It defines the environment, software dependencies and the application's configuration inside a container.
@@ -125,14 +125,14 @@ EXPOSE 3000
 CMD ["npm", "start"]
 ```
 
-# Container
+### Container
 
 - Container is a running instance of an image.
 - Containers are lightweight.
 - Each Docker container has its virtual file system.
 - The container FS is temporary, so the data inside the file system is also not persistent.
 
-# Container runtime
+### Container runtime
 
 - A container runtime is the software that is responsible for running containers on a system.
 -  It manages the lifecycle of containers, including their creation, execution and termination.
