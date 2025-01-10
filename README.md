@@ -27,7 +27,7 @@ Let us start by installing docker and docker compose.
 
 - Virtualization is the process of simulating hardware and software in a virtual (software) environment.
 - Let us understand it by taking an example:
-- ![example image](img1.png)
+![example image](img1.png)
 - Let us suppose, we have an application with 3 different services, each running their own operating system.
 - Some disadvantages of this type of arrangement:
     - Increased cost: As we have seperate physical machines for every service, the cost increases.
@@ -36,7 +36,7 @@ Let us start by installing docker and docker compose.
 - Now let us see how this issue is solved using virtualization. Before that, let's get to familiarize with some terms related to virtualization.
     1. Virtual machines: A software-based emulation of a physical computer that runs an operating system and applications just like a physical computer does.
     2. Hypervisor: A software layer which manages all the virtual machines.
-- ![virtualization image](virt.png)
+![virtualization image](virt.png)
 - By using virtualization, we can use a single physical server for all our services, reducing the number of servers and hardware resourses.
 - Each service (Email, Website Server, Database) runs inside its own Virtual Machine (VM).
 - Each VM has its own isolated operating system (e.g. Windows, Linux, Mac) and resources, but these are virtualized.
