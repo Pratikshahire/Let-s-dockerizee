@@ -28,7 +28,7 @@ Let us start by installing docker and docker compose.
 - Virtualization is the process of simulating hardware and software in a virtual (software) environment.
 - Let us understand it by taking an example:
 
-![example image](img1.png)
+<img src="./asset/img1.png" alt="Example Image" width="800" />
 
 - Let us suppose, we have an application with 3 different services, each running their own operating system.
 - Some disadvantages of this type of arrangement:
@@ -39,7 +39,7 @@ Let us start by installing docker and docker compose.
     1. Virtual machines: A software-based emulation of a physical computer that runs an operating system and applications just like a physical computer does.
     2. Hypervisor: A software layer which manages all the virtual machines.
 
-![virtualization image](virt.png)
+<img src="./asset/img2.png" alt="Virtualization" width="800" />
 
 - By using virtualization, we can use a single physical server for all our services, reducing the number of servers and hardware resourses.
 - Each service (Email, Website Server, Database) runs inside its own Virtual Machine (VM).
@@ -83,13 +83,13 @@ Let us start by installing docker and docker compose.
 - Docker images are built in layers. We have a base layer which is the fundamental layer and then on top of it we have image layers.
 - When we run a container, Docker creates a writable layer on top of the image where any changes are stored during the container's lifecycle. See the image below.
 
-![Docker image](image.png)
+<img src="./asset/container-layers.png" alt="Docker Image" width="800" />
 
 - Each layer typically corresponds to a single instruction in the Dockerfile.  
 - These layers are stored as read-only files, and Docker can reuse them across different images. e.g. if you have an ubuntu image in your system and image uses the same version of ubuntu, it won't download it again.
 - When you create a Docker image, each layer is given a hash value based on its content. This hash is computed using a cryptographic hash function, usually SHA256.
 
-![hashes image](hash.png)
+<img src="hash.png" alt="Hash Image" width="800" />
 
 - Docker uses these hashes to identify and cache layers. If the content of a layer hasn't changed, Docker can reuse the cached layer (based on its hash) when building a new image, making the build process faster.
 - Images are portable. The image you build on your local machine will work the same way on any other machine with Docker installed.
@@ -115,7 +115,7 @@ Let us start by installing docker and docker compose.
 
 - Example dockerfile
 
-```yaml
+```text
 FROM node:16
 WORKDIR /app
 COPY package*.json ./
@@ -132,6 +132,8 @@ CMD ["npm", "start"]
 - Each Docker container has its virtual file system.
 - The container FS is temporary, so the data inside the file system is also not persistent.
 
+<img src="./asset/how-containers-are-built.webp" alt="Docker Image" width="800" />
+
 ### Container runtime
 
 - A container runtime is the software that is responsible for running containers on a system.
@@ -140,15 +142,65 @@ CMD ["npm", "start"]
 - Some examples of container runtime are runc, docker, containerd, CRI-O and podman.
 - Work of container runtime: pull the image -> start the container -> execute the container -> manage container's lifecycle
     
-## Docker Commands Table
+## Docker Commands
+
+- Docker runs as a root process on the system and thus require root privileges. So, always use 'sudo' before any Docker command.
+- Avoid using sudo everytime?: We can add our user to the Docker group (which has the necessary privileges to access Docker resources).
+```bash
+sudo usermod -aG docker $USER
+```
 
 | Command | Description |
 | --- | --- |
-| `docker ps` | Check all the running docker containers |
+| `docker images` | List all the images |
+| `docker pull <image>:<tag>` | Download an image from the registry |
+| `docker build -t <image>:<tag> <path_to_dockerfile>` | Build an image from the dokcerfile |
+| `docker rmi <image_name_or_id>` | Delete an image |
+| `docker tag <source_image>:<tag> <target_image>:<tag>` | Add tag to an image |
+| `docker push <image>:<tag>` | Push an image to the registry |
+| `docker inspect <image>:<tag>` | Display detailed information about an image |
+| `docker ps` | List all the running docker containers |
+| `docker ps -a` | List all the running, stopped as well as created docker containers |
+| `docker start <container_name_or_id>` | Start a stopped container |
+| `docker stop <container_name_or_id>` | Stop a running container |
+| `docker restart <container_name_or_id>` | Restart a container |
+| `docker run <image>` | Create and start a container of the image |
+| `docker run -d <image>` | Run a container in detached mode (background) |
+| `docker run -it <image>` | Run a container interactively (with terminal) |
+| `docker run --name <container_name> <image>` | Run a container with a custom name |
+| `docker run -p <host_port>:<container_port>` | Map a port from container to the host |
+| `docker exec -it <container_name_or_id> <command>` | Executes a command inside a running container |
+| `docker inspect <container_name_or_id>` | Provide detailed information about the container |
+| `docker rm <container_name_or_id>` | Remove a stopped container |
+| `docker rm -f <container_name_or_id>` | Forcefully remove a running container |
+| `docker container prune` | Remove all unused containers |
+| `docker attach <container_name_or_id>` | Attach to a running containers console |
 
 ## Docker Architecture
 
+- Docker uses a client-server architecture.
+- The docker client (CLI) talks to the docker daemon (a background process) which in turns manages the lifecycle of containers.
+- Various components of the docker architecture:
+    1. Docker client: Provides a command-line interface (CLI) that allows users to interact with the docker daemon.
+    2. Docker daemon: Listens to Docker API requests and manages Docker objects such as images, containers, networks and volumes.
+    3. Docker host: Provides a complete environment to execute and run containers. It comprises of the Docker daemon, Images, Containers, Networks and Storage. 
+    4. Docker registry: Stores docker images.
+
+<img src="./asset/docker-architecture.png" alt="Docker Architecture" width="800" />
+
+### Docker Engine
+
+- The docker engine is the main component of the docker architecture.
+- It consists of 3 important parts:
+    1. Docker daemon (dockerd): Manages docker objects, listens to API requests from clients, communicates with the container runtime to perform low level tasks creating, starting, stopping containers, etc.
+    2. Docker REST API: REST API provide interface for interacting with docker daemon, docker CLI uses this API to communicate with docker daemon.
+    3. Docker CLI: A command-line tool that developers and administrators use to interact with the docker daemon. 
+
+<img src="./asset/docker-engine.png" alt="Docker Engine" width="800" />
+
 ## Docker Volumes
+
+
 
 ## Volume Commands
 
