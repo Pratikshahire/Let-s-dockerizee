@@ -141,6 +141,23 @@ CMD ["npm", "start"]
 - The container runtime interacts directly with the host operating system's kernel to allocate resources, manage networking and control the containers. 
 - Some examples of container runtime are runc, docker, containerd, CRI-O and podman.
 - Work of container runtime: pull the image -> start the container -> execute the container -> manage container's lifecycle
+- Before moving forward, let us take a look at [OCI](https://opencontainers.org/).
+- The Open Container Initiative (OCI) is a Linux Foundation project to design open standards for containers.
+- Types of container runtime:
+    1. Low-level 
+        - Any container engine that implements the Open Container Initiative (OCI) runtime specification is considered to be a low-level container runtime.
+        - Handle the core part such as lifecycle of containers, including creation, execution, pausing and termination.
+        - They interact directly with the operating system's kernel and container-specific features like namespaces and cgroups to isolate and manage containers.
+        - e.g. runc, containerd-shim
+    2. High-level
+        - High-level container runtimes are tools that provide user-friendly interfaces and additional features for managing containers, building upon the functionality of low-level container runtimes. 
+        - Provide orchestration, networking, and image management.
+        - These runtimes abstract the complexities of directly interacting with low-level runtimes and kernel features.
+        - e.g. Docker, Podman, CRI-O, containerd
+        - containerd is basically considered as a bridge between low-level and high-level runtimes.
+- Hope the below image will be clear now:
+
+<img src="./asset/runtimes.webp" alt="Docker Container Runtime" width="800" />
     
 ## Docker Commands
 
@@ -191,6 +208,8 @@ sudo usermod -aG docker $USER
 ### Docker Engine
 
 - The docker engine is the main component of the docker architecture.
+- It is also a high-level container runtime which uses containerd which further uses runc (low-level container runtime). 
+- But it is more than a runtime, it is a complete containerization platform.
 - It consists of 3 important parts:
     1. Docker daemon (dockerd): Manages docker objects, listens to API requests from clients, communicates with the container runtime to perform low level tasks creating, starting, stopping containers, etc.
     2. Docker REST API: REST API provide interface for interacting with docker daemon, docker CLI uses this API to communicate with docker daemon.
