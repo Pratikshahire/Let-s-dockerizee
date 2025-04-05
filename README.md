@@ -219,13 +219,69 @@ sudo usermod -aG docker $USER
 
 ## Docker Volumes
 
+- Docker containers store stateless applications very easily, because containers are EPHEMERAL in nature.
+- If a container crashes or is removed, any data created inside the container (like logs, uploads, database data) is lost.
+- So, to have data consistency, the concept of volumes was introduced.
+- Volumes are a mechanism for storing data outside containers.
+- We create volumes on our host systems and they are mounted to filesystem paths in your containers.
+- When containers write to a path beneath a volume mount point, the changes will be applied to the volume instead of the container’s writable image layer. 
+- All volumes are managed by Docker and stored in a dedicated directory on your host, usually /var/lib/docker/volumes for Linux systems.
+- We can use volumes for stateful applications.
+- Usecases: 
+    1. Database storage
+    2. Data backups
+    3. Share data between containers
 
+## Bind Mounts
+
+- Bind mounts are another way to give containers access to files and folders on your host.
+- They directly mount a host directory into your container. 
+- Any Changes made to the host directory or container directory will be reflected on both the sides.
+- Bind mounts are useful when you need to quickly link a directory or file from your host system into a container - typically for temporary or development tasks.
+- For example: bind mounting our working directory into a container automatically synchronizes our source code files, allowing us to immediately test changes without rebuilding your Docker image.
+- Volumes are a better solution when we're providing permanent storage. Because they’re managed by Docker, we don’t need to manually maintain directories on your host.
+- How to bind mount a container: docker run -v /host_path:/container_path <image>
+
+## tmpfs Mounts
+
+- Tmpfs mounts allow you to mount a temporary file system into a container’s filesystem, which resides in memory rather than on disk.
+- Tmpfs mounts in Docker can be particularly useful for improving performance or reducing wear on disk storage in situations where temporary data needs to be quickly accessed and doesn’t need to persist beyond the lifetime of the container.
+- When the container stops, the tmpfs mount is removed, and files written there won't be persisted.
+- How to temporarily mount file system to a container: docker run --tmpfs /container_tmp_path <image>
+
+### Volume Types
+
+- There are 2 types of volumes:
+    1. Named
+    2. Anonymous
+
+1. Named volumes:
+    - Managed by Docker and has a specific name that we can refer across containers.
+    - They are used to share data between containers
+    - They are used if we need long term storage.
+
+2. Anonymous volumes:
+    - Volume created by Docker without a name — it is assigned a random name in the background.
+    - They are hard to track.
+    - They are temporary storage when you don’t need to reuse the volume.
+
+### Data sharing using volumes
+
+- Named volumes are used for sharing data across containers.
+- We can mount a single volumes to 2 different containers.
+- Let us suppose we mount a named volume to /app1 of container 1 and /app2 of container 2, whenever any data is written in /app1 it will be written into /app2 and vice-versa.
+- This is how data sharing works in containers using named volumes.
 
 ## Volume Commands
 
 | Command | Description |
 | --- | --- |
 | `docker volume ls` | List all the volumes in the system |
+| `docker volume create <volume_name>` | Create a volume |
+| `docker volume inspect <volume_name>` | Get more information about a volume |
+| `docker volume rm <volume_name>` | Remove a volume |
+| `docker volume prune` | Remove all unused volumes
+| `docker run -v <volume_name>:/container_directory <image_name>` | Use a volume with a container |
 
 ## Docker Networking
 
