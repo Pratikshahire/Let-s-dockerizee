@@ -293,14 +293,14 @@ sudo usermod -aG docker $USER
 - Docker has an IP address range to it.
 - By default, Docker uses private IP ranges from the RFC 1918 standard - just like our home Wi-Fi might use 192.168.x.x or 10.x.x.x.
 
-<img src="./asset/nw1.png" alt="Docker Engine" width="800" />
+<img src="./asset/nw1.png" alt="Docker Engine" width="600" />
 
 - As we can see in the image above, whenever a container is created docker creates a virtual network called as docker0 (More about it further) through which the containers communicate. 
 - eth0 is the network interface of the host. 
 - For every container a virtual ethernet (veth) pair is created. 
 - The docker0 acts as a gateway between the eth0 of the host and the veth0 of the container for them to communicate.
 
-<img src="./asset/nw2.png" alt="Docker Engine" width="800" />
+<img src="./asset/nw2.png" alt="Docker Engine" width="600" />
 
 - From the above image we can see that, for every container, a different pair of veth is created.
 - All the containers also communicate through the bridge.
