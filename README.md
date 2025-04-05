@@ -232,7 +232,7 @@ sudo usermod -aG docker $USER
     2. Data backups
     3. Share data between containers
 
-## Bind Mounts
+### Bind Mounts
 
 - Bind mounts are another way to give containers access to files and folders on your host.
 - They directly mount a host directory into your container. 
@@ -242,7 +242,7 @@ sudo usermod -aG docker $USER
 - Volumes are a better solution when we're providing permanent storage. Because they’re managed by Docker, we don’t need to manually maintain directories on your host.
 - How to bind mount a container: docker run -v /host_path:/container_path <image>
 
-## tmpfs Mounts
+### tmpfs Mounts
 
 - Tmpfs mounts allow you to mount a temporary file system into a container’s filesystem, which resides in memory rather than on disk.
 - Tmpfs mounts in Docker can be particularly useful for improving performance or reducing wear on disk storage in situations where temporary data needs to be quickly accessed and doesn’t need to persist beyond the lifetime of the container.
@@ -285,11 +285,104 @@ sudo usermod -aG docker $USER
 
 ## Docker Networking
 
+- We containerize different components of our application separately for a multi-containerized application.
+- These parts need to communicate with each other.
+- Container to container communication is carried out by docker networking.
+- When we install docker, it creates a virtual network on our host for containers to communicate.
+- As similar to usual networking of our devices, docker containers are also identified by IP addresses while communicating.
+- Docker has an IP address range to it.
+- By default, Docker uses private IP ranges from the RFC 1918 standard - just like our home Wi-Fi might use 192.168.x.x or 10.x.x.x.
+
+<img src="./asset/nw1.png" alt="Docker Engine" width="800" />
+
+- As we can see in the image above, whenever a container is created docker creates a virtual network called as docker0 (More about it further) through which the containers communicate. 
+- eth0 is the network interface of the host. 
+- For every container a virtual ethernet (veth) pair is created. 
+- The docker0 acts as a gateway between the eth0 of the host and the veth0 of the container for them to communicate.
+
+<img src="./asset/nw2.png" alt="Docker Engine" width="800" />
+
+- From the above image we can see that, for every container, a different pair of veth is created.
+- All the containers also communicate through the bridge.
+
+### Types of Networks
+
+- There are total 7 types of networks in docker.
+
+1. Default bridge network:
+    - It is also called as Docker0.
+    - Whenever we spin up a container without defining any specific network, it is by default added into the default bridge network.
+    - Containers talk to each other by using their IP addresses.
+    - The scope of this network is for a single host.
+    - In default bridge network, containers cannot resolve each others' names from IP addresses, so they cannot talk to each other using the container names.
+    - The default bridge network typically uses IP address range: 172.17.0.0/16 - 172.17.255.254/16
+
+2. User-defined bridge network:
+    - We can create our own networks with any names.
+    - We need to explicitly add containers in these networks.
+    - Here, containers communicate via IP addresses as well as container names as DNS is available.
+    - The user-defined bridge network typically uses IP address range: 172.18.0.0/16 - 172.31.0.0/16 
+
+- Bridge networks create a connection between:
+    - containers connected to the same network
+    - container and the host
+
+3. Host:
+    - By default containers are network-isolated from the host, but containers on a host network share the host's network stack.
+    - There is no container-level isolation.
+    - It can be used for high performance workloads, where routing, Network Address Translation (NAT) and DNS resolutions could affect.
+    - The container is inside the host's network — no virtual network, no NAT, no bridge. (We'll see more about NAT further)
+    - If we run an nginx service a docker container and if nginx serves on port 80, we cannot access the nginx server on http://localhost:80 as docker containers have their own IP addresses, so we need to perform port mapping. (More about port mapping later)
+    - If we use host network, the container does not get an IP address, it shares the IP address of the host itself, so the service would be accessible on localhost port 80.
+    - In some conditions, using the host network is more efficient.
+
+4. None:
+    - The container does not get added to any network at all.
+    - It is mostly used for useful for security testing or sandboxed apps.
+    - It is also used for compute-only containers which do not need any network access.
+
+5. Overlay:
+    - This network is the magic behind Docker Swarm (We will learn it further) and multi-host container networking. 
+    - An overlay network lets containers running on different Docker hosts communicate as if they’re on the same local network - securely and efficiently.
+    - Imagine you have two VMs: VM1 runs container A and VM2 runs container B. Using an overlay network A and B can talk to each other using their container names and It feels like they’re both on the same Local Area Network (LAN), even though they’re on different machines.
+    - How overlays work under the hood?
+        1. VXLAN tunneling: Docker uses VXLAN (Virtual eXtensible LAN) to encapsulate network packets and send them across machines.
+        2. Gossip protocol: Docker nodes exchange network info using encrypted gossip (We will see further) to maintain the overlay state.
+        3. Routing mesh: Allows incoming traffic to be routed to any node, and Docker redirects it to the correct container.
+        4. Service discovery: Docker manages internal DNS so containers can talk using service names, not IPs.
+    - So, we can say overlay networks make us think that the containers are in a user-defined bridge network on the same machine.
+
+6. Macvlan:
+    - Macvlan allows Docker containers to have their own MAC address and IP address, as if they were separate physical machines on our LAN.
+    - In contrast to bridge or overlay, which use NAT and virtual subnets, macvlan connects containers directly to our host's physical network.
+    - It makes our container act as a physical real-world device.
+    - Our host has an IP address in our LAN, for the mcvlan network we need to take a subnet range from the LAN and assign the IP addresses to the containers manually.
+    - For MAC addresses, docker will generate a random MAC address for each container in the network.
+    - Macvlan gives each container its own IP - no need for Docker to forward ports from host.
+    - Macvlan network is used when other devices on the LAN (laptops, printers, IoT stuff) need to connect to containers directly.
+    - In a macvlan network, by default, the host cannot communicate with the containers, even though they’re on the same subnet.
+    - Why? In mcvlan, both host and container are using the same physical Network Interface Card (NIC) which is eth0. Linux kernel has a weird rule which says: we can’t send traffic from eth0 to macvlan0 and expect it to come back in via the same interface. So the host and container cannot communicate with each other.
+
+7. Ipvlan:
+    - Ipvlan lets containers appear on the same network as the host, with individual IP addresses, but using the same MAC address.
+    - Unlike macvlan, ipvlan doesn't create a separate MAC for each container.
+    - There are two modes of ipvlan, depending on how packets are sent between host and container:
+        1. L2: Works like a switch: assigns containers IPs on the same subnet as the host
+        2. L3: Works like a router: assigns IPs from a different subnet, routes traffic
+    - In ipvlan, only IP address is different, the MAC is same and physical NIC is same as the host so host and container can communicate with each other.
+
 ## Networking Commands
 
 | Command | Description |
 | --- | --- |
 | `docker network ls` | List all the networks in the system |
+| `docker network create <network_name>` | Create a user-defined bridge network |
+| `docker network inspect <network_name>` | Get more information about the network |
+| `docker network rm <network_name>` | Remove the network if not containers are attached to it |
+| `docker network connect <network_name> <container_name>` | Connect a running container to a network |
+| `docker network disconnect <network_name> <container_name>` | Disconnect a container from a network |
+| `docker run --network <network_name> <image_name>` | Run a container with a custom network |
+| `docker network prune` | Remove all unused docker networks |
 
 ## Docker Compose
 
@@ -305,6 +398,13 @@ services:
 
 | Command | Description |
 | --- | --- |
-| `docker-compose up` | run the compose file |
+| `docker-compose up` | Create and start services defined in docker-compose.yml |
+| `docker-compose down` | Stops and removes containers, networks and by default, anonymous volumes |
+| `docker-compose restart` | Restart the services |
+| `docker-compose rm` | Remove the containers |
+| `docker-compose stop` | Stop all services/containers defined in docker-compose.yml |
+| `docker-compose start` | Start all services/containers that were stopped |
 
 ## Docker Swarm
+
+
