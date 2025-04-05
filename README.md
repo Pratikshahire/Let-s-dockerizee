@@ -89,7 +89,7 @@ Let us start by installing docker and docker compose.
 - These layers are stored as read-only files, and Docker can reuse them across different images. e.g. if you have an ubuntu image in your system and image uses the same version of ubuntu, it won't download it again.
 - When you create a Docker image, each layer is given a hash value based on its content. This hash is computed using a cryptographic hash function, usually SHA256.
 
-<img src="hash.png" alt="Hash Image" width="800" />
+<img src="./asset/hash.png" alt="Hash Image" width="800" />
 
 - Docker uses these hashes to identify and cache layers. If the content of a layer hasn't changed, Docker can reuse the cached layer (based on its hash) when building a new image, making the build process faster.
 - Images are portable. The image you build on your local machine will work the same way on any other machine with Docker installed.
@@ -134,7 +134,7 @@ CMD ["npm", "start"]
 
 <img src="./asset/how-containers-are-built.webp" alt="Docker Image" width="800" />
 
-### Container runtime
+### Container Runtime
 
 - A container runtime is the software that is responsible for running containers on a system.
 -  It manages the lifecycle of containers, including their creation, execution and termination.
