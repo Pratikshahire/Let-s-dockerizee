@@ -371,6 +371,26 @@ sudo usermod -aG docker $USER
         2. L3: Works like a router: assigns IPs from a different subnet, routes traffic
     - In ipvlan, only IP address is different, the MAC is same and physical NIC is same as the host so host and container can communicate with each other.
 
+### Port Mapping
+
+- Docker isolates the containers by default, from the host.
+- The containers have their own network stack and networking namespaces.
+- For us to access the services running inside the container, we need to map ports from host to the container, this is called port mapping.
+
+<img src="./asset/port_map.png" alt="Port Mapping" width="600" />
+
+- There are 2 different things: Exposing a port and publishing a port.
+- Many times, people get confused in these two. Let's clear the difference.
+- Expose: 
+    - Acts as documentation to indicate which port the app inside the container is listening on. 
+    - It does not actually make the port accessible from the host or outside world. 
+    - If we have EXPOSE 5000, this just tells Docker: “Hey, this container listens on port 5000”.
+    - We expose the ports mainly in the dockerfile using EXPOSE.
+- Publish: 
+    - Actually binds a container port to a port on the host machine.
+    - Makes the container's port accessible to the outside (e.g., browser, Postman, etc.)
+    - We publish the port while creating a container using the -p or --publish flag.
+
 ## Networking Commands
 
 | Command | Description |
@@ -383,6 +403,7 @@ sudo usermod -aG docker $USER
 | `docker network disconnect <network_name> <container_name>` | Disconnect a container from a network |
 | `docker run --network <network_name> <image_name>` | Run a container with a custom network |
 | `docker network prune` | Remove all unused docker networks |
+| `docker run -d -p <host_port>:<container_port> <image_name>` | Publish a port |
 
 ## Docker Compose
 
