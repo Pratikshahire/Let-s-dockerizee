@@ -377,7 +377,7 @@ sudo usermod -aG docker $USER
 - The containers have their own network stack and networking namespaces.
 - For us to access the services running inside the container, we need to map ports from host to the container, this is called port mapping.
 
-<img src="./asset/port_map.png" alt="Port Mapping" width="600" />
+<img src="./asset/port_map.png" alt="Port Mapping" width="800" />
 
 - There are 2 different things: Exposing a port and publishing a port.
 - Many times, people get confused in these two. Let's clear the difference.
@@ -407,13 +407,84 @@ sudo usermod -aG docker $USER
 
 ## Docker Compose
 
+- Docker compose is a tool which makes running multi-container applications easy.
+- If we have an application having, let us say 1000 containers, it will be quite cumbersome to run all the 1000 containers everytime we want to start the application.
+- Here, docker compose comes into play. We have something called as a compose file or YAML file which runs all these containers at once, simplifying our work.
+
 ### YAML file
 
+- YAML stands for "Yet Another Markup Language" or " YAML ain't Markup Language".
+- YAML is not a traditional markup language like HTML or XML. Instead, it's designed to be a human-readable data serialization format — simple, clean, and easy to write and read.
+- INDENTATION is very important in a YAML file. Pay special attention to it.
+- The YAML file is a configuration file which defines how all the containers will run.
+- The containers are called as services in the YAML file, as each container has one service defined for it.
+- The YAML file has .yaml or .yml extension.
+- This is how a YAML file looks like:
+
 ```yaml
-version:
+
+version: '3.9'
 
 services:
+  web:
+    image: nginx:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - ./html:/usr/share/nginx/html
+    environment:
+      - NGINX_HOST=localhost
+    depends_on:
+      - app
+    networks:
+      - frontend
+
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+    volumes:
+      - ./app:/app
+    networks:
+      - frontend
+      - backend
+
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: mydb
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - backend
+
+volumes:
+  db_data:
+
+networks:
+  frontend:
+  backend:
+
 ```
+
+1. Version: specifies the version of the compose file syntax.
+2. Services: Defines the different containers the app needs to run.
+3. Web, app, db: These are individual services (containers) - each one is a separate container running a task.
+4. Image: This defines the base image the container is running on. If we locally have the image it is used or it is pulled from DockerHub.
+5. Build: Defines how to build an image from a dockerfile. We give the location / path of dockerfile in the context field and dockerfile name in the dockerfile field.
+6. Ports: This is used for port mapping. Syntax: <host_port>:<container_port>
+7. Volumes (inside services): Mounts a directory or file from the host into the container. Uses the volume specified in the main Volume component.
+8. Environment: Sets environment variables inside the container.
+9. Depends_on: Sets the execution sequence of containers / services. If we have frontend depends_on backend, then backend starts before frontend.
+10. restart: Tells Docker how to handle container restarts. "always" means restart it if it crashes.
+11. Volumes: Declares named volumes (like db_data) to persist data across container restarts or rebuilds.
+12. Networks: Declares custom Docker networks. Without this, all services are put in a default network.
 
 ## Compose Commands
 
