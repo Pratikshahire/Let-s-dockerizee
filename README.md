@@ -486,7 +486,7 @@ networks:
 11. Volumes: Declares named volumes (like db_data) to persist data across container restarts or rebuilds.
 12. Networks: Declares custom Docker networks. Without this, all services are put in a default network.
 
-## Compose Commands
+### Compose Commands
 
 | Command | Description |
 | --- | --- |
@@ -498,5 +498,111 @@ networks:
 | `docker-compose start` | Start all services/containers that were stopped |
 
 ## Docker Swarm
+
+- Docker Swarm is a container orchestration tool provided by Docker.
+- Orchestration means automating the deployment, management, scaling and networking of containers.
+- For multi-container applications we used docker compose, but the containers are to be on the same host for it.
+- Docker swarm lets us connect containers to multiple hosts, similar to Kubernetes.
+- Instead of running containers on just one machine, Swarm lets us run them across multiple machines and manages all of them together efficiently.
+- Docker swarm offers more scalability and availability.
+- Stack in Swarm: Instead of running one service at a time, a stack lets us deploy the entire app at once using a single "docker-compose.yml" file.
+- Tokens in swarm: A token is a secret string that lets a machine join to a Docker Swarm. There are 2 kinds of tokens - worker and manager and they control the role of the node. When we initialize a Swarm, these 2 tokens are created.
+- Docker Swarm uses port 2377 to control traffic.
+
+### Docker Swarm Components
+
+1. Cluster:
+  - Group of machines running docker.
+
+2. Node:
+  - A node is a single Docker engine (physical / virtual machine running docker) participating in the swarm.
+  - Nodes can be of two types: 
+    1. Manager Node:
+      - Orchestrates and manages the swarm.
+      - Maintains the cluster state.
+      - Responsible for scheduling services, handling orchestration and cluster management.
+    2. Worker Node:
+      - Executes containers as instructed by the manager.
+      - Does not participate in orchestration decisions.
+  - A manager node can also act as a worker node if needed.
+  - A cluster consists of multiple manager and worker nodes.
+
+3. Services:
+  - Services are the desired state that we want to run.
+  - It defines how a container should run inside a Swarm.
+  - Example: running an Nginx container replicated 5 times.
+
+4. Tasks:
+  - The actual running instances of a container in Swarm.
+  - The main working unit in Swarm.
+  - Tasks are assigned to worker nodes.
+
+### Connection between Service and Node:
+
+- When you create a service, Swarm breaks it down into tasks (individual container instances).
+- The manager node schedules these tasks onto available worker nodes.
+- Each node then runs the assigned containers.
+- Think of it like this:
+  - Service = "recipe" (what to run, how many times, what image).
+  - Tasks = "dishes" prepared from the recipe (container instances).
+  - Nodes = "chefs" (machines) that actually cook the dishes.
+
+### Swarm Commands
+
+| Swarm Management |
+| --- | --- |
+| Command | Description |
+| --- | --- |
+| `docker swarm init` | Initialize a new Swarm |
+| `docker swarm join --token <token> <manager-ip>:2377` | Join Swarm |
+| `docker swarm join-token manager` | Get token to add new manager |
+| `docker swarm join-token worker` | Get token to add new worker |
+| `docker swarm leave` | Leave Swarm |
+| `docker swarm update --autolock=true` | Update Swarm config |
+
+| Node Management |
+| --- | --- |
+| Command | Description |
+| --- | --- |
+| `docker node ls` | List all nodes |
+| `docker node inspect <node>` | Inspect a node |
+| `docker node update --availability drain <node>` | Drain node |
+| `docker node promote <node>` | Promote node from worker to manager |
+| `docker node demote <node>` | Demote node from manager to worker |
+| `docker node rm <node>` | Remove node |
+
+| Service Management |
+| --- | --- |
+| Command | Description |
+| --- | --- |
+| `docker service create --name <service_name> -p <host_port>:<container_port> <image>` | Create service |
+| `docker service ls` | List services |
+| `docker service ps <service_name>` | List tasks/containers of service |
+| `docker service update --replicas=5 <service_name>` | Scale service |
+| `docker service update --image <image>:latest <service_name>` | Update image |
+| `docker service logs <service_name>` | View service logs |
+| `docker service rm <service_name>` | Remove service |
+
+| Stack Management |
+| --- | --- |
+| Command | Description |
+| --- | --- |
+| `docker stack deploy -c docker-compose.yml <stack_name>` | Deploy stack |
+| `docker stack ls` | List stacks |
+| `docker stack ps <stack_name>` | List tasks in stack |
+| `docker stack services <stack_name>` | List services in stack |
+| `docker stack rm <stack_name>` | Remove stack |
+
+| Useful Commands |
+| --- | --- |
+| Command | Description |
+| --- | --- |
+| `docker info` | Show Swarm status |
+| `docker service inspect <service>` | Inspect service |
+| `docker node inspect self` | Inspect current node |
+
+
+
+
 
 
