@@ -512,30 +512,30 @@ networks:
 ### Docker Swarm Components
 
 1. Cluster:
-  - Group of machines running docker.
+    - Group of machines running docker.
 
 2. Node:
-  - A node is a single Docker engine (physical / virtual machine running docker) participating in the swarm.
-  - Nodes can be of two types: 
-    1. Manager Node:
-      - Orchestrates and manages the swarm.
-      - Maintains the cluster state.
-      - Responsible for scheduling services, handling orchestration and cluster management.
-    2. Worker Node:
-      - Executes containers as instructed by the manager.
-      - Does not participate in orchestration decisions.
-  - A manager node can also act as a worker node if needed.
-  - A cluster consists of multiple manager and worker nodes.
+    - A node is a single Docker engine (physical / virtual machine running docker) participating in the swarm.
+    - Nodes can be of two types: 
+      1. Manager Node:
+        - Orchestrates and manages the swarm.
+        - Maintains the cluster state.
+        - Responsible for scheduling services, handling orchestration and cluster management.
+      2. Worker Node:
+        - Executes containers as instructed by the manager.
+        - Does not participate in orchestration decisions.
+    - A manager node can also act as a worker node if needed.
+    - A cluster consists of multiple manager and worker nodes.
 
 3. Services:
-  - Services are the desired state that we want to run.
-  - It defines how a container should run inside a Swarm.
-  - Example: running an Nginx container replicated 5 times.
+    - Services are the desired state that we want to run.
+    - It defines how a container should run inside a Swarm.
+    - Example: running an Nginx container replicated 5 times.
 
 4. Tasks:
-  - The actual running instances of a container in Swarm.
-  - The main working unit in Swarm.
-  - Tasks are assigned to worker nodes.
+    - The actual running instances of a container in Swarm.
+    - The main working unit in Swarm.
+    - Tasks are assigned to worker nodes.
 
 ### Connection between Service and Node:
 
@@ -549,8 +549,8 @@ networks:
 
 ### Swarm Commands
 
-| Swarm Management |
-| --- | --- |
+Swarm Management
+
 | Command | Description |
 | --- | --- |
 | `docker swarm init` | Initialize a new Swarm |
@@ -560,8 +560,8 @@ networks:
 | `docker swarm leave` | Leave Swarm |
 | `docker swarm update --autolock=true` | Update Swarm config |
 
-| Node Management |
-| --- | --- |
+Node Management
+
 | Command | Description |
 | --- | --- |
 | `docker node ls` | List all nodes |
@@ -571,8 +571,8 @@ networks:
 | `docker node demote <node>` | Demote node from manager to worker |
 | `docker node rm <node>` | Remove node |
 
-| Service Management |
-| --- | --- |
+Service Management
+
 | Command | Description |
 | --- | --- |
 | `docker service create --name <service_name> -p <host_port>:<container_port> <image>` | Create service |
@@ -583,8 +583,8 @@ networks:
 | `docker service logs <service_name>` | View service logs |
 | `docker service rm <service_name>` | Remove service |
 
-| Stack Management |
-| --- | --- |
+Stack Management
+
 | Command | Description |
 | --- | --- |
 | `docker stack deploy -c docker-compose.yml <stack_name>` | Deploy stack |
@@ -593,8 +593,8 @@ networks:
 | `docker stack services <stack_name>` | List services in stack |
 | `docker stack rm <stack_name>` | Remove stack |
 
-| Useful Commands |
-| --- | --- |
+Useful Commands
+
 | Command | Description |
 | --- | --- |
 | `docker info` | Show Swarm status |
